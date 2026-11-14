@@ -2,40 +2,18 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true
+  name: { type: String, required: [true, 'Name is required'], trim: true },
+  email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
+  phone: { type: String, unique: true, sparse: true },
+  passwordHash: { 
+    type: String, 
+    required: function() { return !this.googleId; } 
   },
-  email: {
-    type: String,
-    unique: true,
-    sparse: true, // عشان يسمح يكون فاضي لو سجل برقم الموبايل
-    lowercase: true,
-    trim: true
-  },
-  phone: {
-    type: String,
-    unique: true,
-    sparse: true // عشان يسمح يكون فاضي لو سجل بالإيميل
-  },
-  passwordHash: {
-    type: String,
-    required: function() { return !this.googleId; } // الباسورد إجباري إلا لو مسجل بجوجل
-  },
-  googleId: {
-    type: String,
-    unique: true,
-    sparse: true
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  }
+  googleId: { type: String, unique: true, sparse: true },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }
 }, { timestamps: true });
 
-// تشفير الباسورد
+// تشفير الباسورد قبل الحفظ
 userSchema.pre('save', async function(next) {
   if (!this.isModified('passwordHash') || !this.passwordHash) return next();
   const salt = await bcrypt.genSalt(12);
