@@ -38,10 +38,8 @@ exports.login = async (req, res) => {
   }
 };
 
-// مسار تسجيل الدخول بجوجل
 exports.googleLogin = async (req, res) => {
   try {
-    // البيانات دي بتيجي من الفرونت بعد ما يتحقق من جوجل
     const { user, token } = await authService.loginWithGoogle(req.body);
     sendTokenCookie(res, token);
     res.status(200).json({ status: 'success', message: 'تم الدخول بجوجل بنجاح', data: { user } });
