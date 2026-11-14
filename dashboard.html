@@ -3,43 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERNEXA | لوحة التحكم</title>
+    <title>CYBERNEXA | مركز العمليات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .dashboard-body { background-color: #070b16; color: #fff; font-family: 'Cairo', sans-serif; }
-        .navbar { display: flex; justify-content: space-between; padding: 20px 40px; background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid #334155; }
+        .dashboard-body { background-color: #070b16; color: #fff; font-family: 'Cairo', sans-serif; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid #334155; }
         .logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; }
         .logo span { color: #00ffaa; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 20px; }
-        .card { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 30px; margin-bottom: 20px; }
-        .card h2 { color: #00ffaa; margin-bottom: 15px; }
-        .btn-logout { background: #ff4444; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: inherit; }
-        .btn-logout:hover { background: #cc0000; }
-        .user-info p { margin: 10px 0; font-size: 16px; color: #cbd5e1; }
-        .user-info strong { color: #fff; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card h3 { color: #00ffaa; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .input-field { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; }
+        .btn-action { width: 100%; padding: 12px; background: #00ffaa; color: #070b16; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-family: inherit; }
+        .btn-action:hover { background: #00cc88; }
+        .btn-logout { background: #ff4444; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+        .result-box { margin-top: 15px; padding: 10px; border-radius: 8px; display: none; font-weight: bold; text-align: center; }
+        .result-safe { background: rgba(0, 255, 170, 0.1); color: #00ffaa; border: 1px solid #00ffaa; }
+        .result-danger { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .history-table th, .history-table td { padding: 12px; text-align: right; border-bottom: 1px solid #334155; font-size: 14px; }
+        .history-table th { color: #94a3b8; }
     </style>
 </head>
 <body class="dashboard-body">
     
     <nav class="navbar">
         <a href="index.html" class="logo">CYBER<span>NEXA</span></a>
-        <button id="logoutBtn" class="btn-logout">تسجيل الخروج</button>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span style="color:#cbd5e1;">مرحباً، <strong id="userName" style="color:#00ffaa;">جاري التحميل...</strong></span>
+            <button id="logoutBtn" class="btn-logout">خروج</button>
+        </div>
     </nav>
 
     <div class="container">
-        <div class="card">
-            <h2>مرحباً بك في منصة الحماية 🛡️</h2>
-            <div class="user-info">
-                <p>الاسم: <strong id="userName">جاري التحميل...</strong></p>
-                <p>البريد الإلكتروني: <strong id="userEmail">جاري التحميل...</strong></p>
-                <p>نوع الحساب: <strong id="userRole">جاري التحميل...</strong></p>
+        <h2 style="margin-bottom: 30px;">مركز العمليات الأمنية 🛡️</h2>
+        
+        <div class="grid">
+            <!-- أداة فحص الروابط -->
+            <div class="card">
+                <h3>🔍 فحص الروابط (URL Scanner)</h3>
+                <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">أدخل أي رابط للتأكد من خلوه من التهديدات.</p>
+                <input type="text" id="urlInput" class="input-field" placeholder="https://example.com">
+                <button onclick="scanUrl()" class="btn-action">بدء الفحص</button>
+                <div id="urlResult" class="result-box"></div>
+            </div>
+
+            <!-- أداة فحص كلمة المرور -->
+            <div class="card">
+                <h3>🔐 مقياس قوة كلمة المرور</h3>
+                <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">تأكد من أن كلمة مرورك غير قابلة للاختراق.</p>
+                <input type="password" id="passInput" class="input-field" placeholder="أدخل كلمة المرور هنا">
+                <button onclick="scanPassword()" class="btn-action">تحليل القوة</button>
+                <div id="passResult" class="result-box"></div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>الخدمات المتاحة</h2>
-            <p style="color: #94a3b8;">هنا ستظهر أدوات الفحص والمراقبة الخاصة بك (قيد التطوير).</p>
+        <!-- سجل الفحوصات -->
+        <div class="card" style="margin-top: 30px;">
+            <h3>📊 سجل الفحوصات السابقة</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>الهدف</th>
+                        <th>النتيجة</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr><td colspan="4" style="text-align:center;">جاري تحميل السجل...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
