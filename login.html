@@ -1,1 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERNEXA | تسجيل الدخول</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>تسجيل الدخول إلى <span>CYBERNEXA</span></h2>
+            <p>مرحباً بعودتك، الرجاء إدخال بياناتك</p>
+            
+            <div id="error-message" class="alert error" style="display: none;"></div>
 
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>البريد الإلكتروني أو رقم الهاتف</label>
+                    <input type="text" id="identifier" required placeholder="example@mail.com أو 010...">
+                </div>
+                <div class="input-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                </div>
+                
+                <button type="submit" class="btn-primary">تسجيل الدخول</button>
+            </form>
+
+            <div class="divider">أو</div>
+            
+            <button type="button" class="btn-google" onclick="alert('سيتم تفعيل جوجل بعد ربط مفاتيح الـ API')">
+                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google">
+                الدخول باستخدام Google
+            </button>
+
+            <p class="switch-auth">ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a></p>
+        </div>
+    </div>
+    <script src="js/auth.js"></script>
+</body>
+</html>
