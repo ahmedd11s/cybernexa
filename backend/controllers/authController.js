@@ -47,3 +47,24 @@ exports.googleLogin = async (req, res) => {
     res.status(400).json({ status: 'error', message: err.message });
   }
 };
+
+// جلب بيانات المستخدم الحالي
+exports.getMe = async (req, res) => {
+  try {
+    res.status(200).json({ 
+      status: 'success', 
+      data: { user: req.user } 
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: 'حدث خطأ في السيرفر' });
+  }
+};
+
+// تسجيل الخروج (مسح الكوكي)
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({ status: 'success', message: 'تم تسجيل الخروج' });
+};
