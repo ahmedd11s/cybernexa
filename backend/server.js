@@ -16,6 +16,21 @@ const app = express();
 app.use(helmet());
 app.use(mongoSanitize());
 app.use(express.json({ limit: '10kb' }));
+// مسار تجريبي لفحص SSL والهيدرز
+app.post('/api/test-scan', async (req, res) => {
+  try {
+    const { url } = req.body;
+    const { scanSSL } = require('./services/scanner/sslScanner');
+    const { scanHeaders } = require('./services/scanner/headerScanner');
+    
+    const sslResult = await scanSSL(url);
+    const headerResult = await scanHeaders(url);
+    
+    res.json({ ssl: sslResult, headers: headerResult });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
 
