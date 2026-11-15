@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const auditLogSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  action: { type: String, required: true }, // login_success, login_failed, user_deleted, password_reset
+  action: { type: String, required: true },
   ipAddress: { type: String },
   userAgent: { type: String },
   details: { type: String }
