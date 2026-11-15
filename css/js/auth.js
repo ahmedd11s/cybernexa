@@ -1,6 +1,5 @@
-// عنوان السيرفر بتاعك (الـ Backend)
-// ملاحظة: لو شغال على جهازك خليه localhost، لو مرفوع على استضافة هتغير الرابط ده
-const API_URL = 'http://localhost:5000/api/auth'; 
+// عنوان السيرفر الجديد بتاعك على Suga
+const API_URL = 'https://s7e7sfnablec-production-12fbya08.us-central1.suga.run/api/auth'; 
 
 // --- تسجيل حساب جديد ---
 const registerForm = document.getElementById('registerForm');
