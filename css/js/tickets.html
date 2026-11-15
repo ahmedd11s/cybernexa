@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERNEXA | الدعم الفني</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #070b1a; --accent: #8ab4ff; --accent-dark: #6f9bf0; --accent-rgb: 138, 180, 255; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 40px; background: #0f172a; border-bottom: 1px solid #334155; }
+        .logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; } .logo span { color: var(--accent); }
+        .container { max-width: 800px; margin: 40px auto; padding: 20px; }
+        .card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .input-field { width: 100%; padding: 12px; background: var(--bg); border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; }
+        .input-field:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.25); }
+        .btn-action { padding: 12px 20px; background: var(--accent); color: var(--bg); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit; transition: .3s; }
+        .btn-action:hover { background: var(--accent-dark); }
+        .btn-action:disabled { opacity: .6; cursor: not-allowed; }
+        .ticket-item { border-bottom: 1px solid #334155; padding: 15px 0; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .badge-open { background: rgba(245,194,107,0.18); color: #f5c26b; }
+        .badge-closed { background: rgba(var(--accent-rgb),0.18); color: var(--accent); }
+        .reply-box { background: var(--bg); border-right: 3px solid var(--accent); padding: 10px; margin-top: 10px; font-size: 14px; }
+        a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        @media (max-width: 600px) { .navbar { padding: 14px 16px; } .container { padding: 12px; margin-top: 20px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="dashboard.html" class="logo">CYBER<span>NEXA</span></a>
+        <a href="dashboard.html" style="color: var(--accent); text-decoration: none;">← العودة</a>
+    </nav>
+    <div class="container">
+        <h1 style="margin-bottom: 30px;">🎫 الدعم الفني</h1>
+
+        <div class="card">
+            <h3 style="margin-top: 0;">إنشاء تذكرة جديدة</h3>
+            <input type="text" id="ticketSubject" class="input-field" placeholder="موضوع المشكلة (مثال: لا أستطيع تسجيل الدخول)" aria-label="موضوع المشكلة">
+            <textarea id="ticketMessage" class="input-field" rows="4" placeholder="اشرح المشكلة بالتفصيل..." aria-label="تفاصيل المشكلة"></textarea>
+            <button onclick="createTicket()" class="btn-action">إرسال التذكرة</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0;">تذاكري السابقة</h3>
+            <div id="myTicketsList" aria-live="polite">
+                <p style="color: #94a3b8;">جاري التحميل...</p>
+            </div>
+        </div>
+    </div>
+    <script src="js/tickets.js"></script>
+</body>
+</html>
