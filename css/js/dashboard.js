@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:5000/api';
 
-// دالة لجلب بيانات المستخدم
+// 1. جلب بيانات المستخدم
 async function getUserProfile() {
     try {
         const response = await fetch(`${API_URL}/auth/me`, { credentials: 'include' });
@@ -8,12 +8,17 @@ async function getUserProfile() {
         
         const data = await response.json();
         document.getElementById('userName').textContent = data.data.user.name;
+
+        // إظهار لوحة المدير لو المستخدم أدمن
+        if (data.data.user.role === 'admin') {
+            document.getElementById('adminCard').style.display = 'flex';
+        }
     } catch (error) {
         window.location.href = 'login.html';
     }
 }
 
-// دالة لجلب سجل الفحوصات
+// 2. جلب سجل الفحوصات
 async function loadHistory() {
     try {
         const response = await fetch(`${API_URL}/scans/history`, { credentials: 'include' });
@@ -27,7 +32,7 @@ async function loadHistory() {
 
         tbody.innerHTML = data.data.map(scan => `
             <tr>
-                <td>${scan.type === 'url' ? 'رابط' : 'كلمة مرور'}</td>
+                <td>${scan.type === 'url' ? 'رابط' : (scan.type === 'file' ? 'ملف' : 'كلمة مرور')}</td>
                 <td>${scan.target}</td>
                 <td style="color: ${scan.riskScore > 50 ? '#ff4444' : '#00ffaa'}">${scan.result}</td>
                 <td>${new Date(scan.createdAt).toLocaleDateString('ar-EG')}</td>
@@ -38,7 +43,7 @@ async function loadHistory() {
     }
 }
 
-// دالة فحص الروابط
+// 3. فحص الروابط
 async function scanUrl() {
     const url = document.getElementById('urlInput').value;
     const resultBox = document.getElementById('urlResult');
@@ -59,13 +64,13 @@ async function scanUrl() {
         
         resultBox.className = `result-box ${data.data.riskScore > 50 ? 'result-danger' : 'result-safe'}`;
         resultBox.textContent = data.data.result;
-        loadHistory(); // تحديث السجل
+        loadHistory();
     } catch (error) {
         resultBox.textContent = 'حدث خطأ';
     }
 }
 
-// دالة فحص كلمة المرور
+// 4. فحص كلمة المرور
 async function scanPassword() {
     const password = document.getElementById('passInput').value;
     const resultBox = document.getElementById('passResult');
@@ -86,7 +91,34 @@ async function scanPassword() {
         
         resultBox.className = `result-box ${data.data.riskScore > 50 ? 'result-danger' : 'result-safe'}`;
         resultBox.textContent = data.data.result;
-        loadHistory(); // تحديث السجل
+        loadHistory();
+    } catch (error) {
+        resultBox.textContent = 'حدث خطأ';
+    }
+}
+
+// 5. فحص الملفات
+async function scanFile() {
+    const fileName = document.getElementById('fileInput').value;
+    const resultBox = document.getElementById('fileResult');
+    if (!fileName) return alert('الرجاء إدخال اسم الملف');
+
+    resultBox.style.display = 'block';
+    resultBox.className = 'result-box';
+    resultBox.textContent = 'جاري فحص الملف...';
+
+    try {
+        const response = await fetch(`${API_URL}/scans/file`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileName, fileSize: 10 }),
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        resultBox.className = `result-box ${data.data.riskScore > 50 ? 'result-danger' : 'result-safe'}`;
+        resultBox.textContent = data.data.result;
+        loadHistory();
     } catch (error) {
         resultBox.textContent = 'حدث خطأ';
     }
@@ -98,6 +130,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
     window.location.href = 'login.html';
 });
 
-// تشغيل الدوال عند فتح الصفحة
+// تشغيل الدوال
 getUserProfile();
 loadHistory();
