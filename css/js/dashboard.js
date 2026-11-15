@@ -133,3 +133,29 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 // تشغيل الدوال
 getUserProfile();
 loadHistory();
+// دالة فحص الملفات
+async function scanFile() {
+    const fileName = document.getElementById('fileInput').value;
+    const resultBox = document.getElementById('fileResult');
+    if (!fileName) return alert('الرجاء إدخال اسم الملف');
+
+    resultBox.style.display = 'block';
+    resultBox.className = 'result-box';
+    resultBox.textContent = 'جاري فحص الملف...';
+
+    try {
+        const response = await fetch(`${API_URL}/scans/file`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileName, fileSize: 10 }), // بنبعت حجم وهمي
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        resultBox.className = `result-box ${data.data.riskScore > 50 ? 'result-danger' : 'result-safe'}`;
+        resultBox.textContent = data.data.result;
+        if (typeof loadHistory === 'function') loadHistory();
+    } catch (error) {
+        resultBox.textContent = 'حدث خطأ';
+    }
+}
