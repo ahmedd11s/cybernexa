@@ -1,12 +1,11 @@
 const Scan = require('../models/Scan');
 
-// 1. فحص الروابط (محاكاة ذكاء اصطناعي للفحص)
+// 1. فحص الروابط
 exports.scanUrl = async (req, res) => {
   try {
     const { url } = req.body;
     if (!url) return res.status(400).json({ message: 'الرجاء إدخال رابط' });
 
-    // محاكاة للفحص (في الحقيقة هنا بنربط API حقيقي)
     let riskScore = 10;
     let result = 'آمن';
     
@@ -18,13 +17,8 @@ exports.scanUrl = async (req, res) => {
       result = 'مشبوه (رابط قصير جداً)';
     }
 
-    // حفظ الفحص في قاعدة البيانات
     const newScan = await Scan.create({
-      user: req.user._id,
-      type: 'url',
-      target: url,
-      result: result,
-      riskScore: riskScore
+      user: req.user._id, type: 'url', target: url, result: result, riskScore: riskScore
     });
 
     res.status(200).json({ status: 'success', data: newScan });
@@ -50,11 +44,7 @@ exports.scanPassword = async (req, res) => {
     else if (score >= 50) result = 'متوسطة';
 
     const newScan = await Scan.create({
-      user: req.user._id,
-      type: 'password',
-      target: '********', // مبنحفظش الباسورد الحقيقي أمنياً
-      result: result,
-      riskScore: 100 - score
+      user: req.user._id, type: 'password', target: '********', result: result, riskScore: 100 - score
     });
 
     res.status(200).json({ status: 'success', data: newScan });
@@ -63,7 +53,35 @@ exports.scanPassword = async (req, res) => {
   }
 };
 
-// 3. جلب سجل الفحوصات الخاص بالمستخدم
+// 3. فحص الملفات (جديد)
+exports.scanFile = async (req, res) => {
+  try {
+    const { fileName, fileSize } = req.body;
+    if (!fileName) return res.status(400).json({ message: 'الرجاء إرسال اسم الملف' });
+
+    let riskScore = 5;
+    let result = 'آمن';
+
+    const dangerousExts = ['.exe', '.bat', '.vbs', '.js'];
+    if (dangerousExts.some(ext => fileName.toLowerCase().endsWith(ext))) {
+      riskScore = 90;
+      result = 'ملف خطير (تنفيذي)';
+    } else if (fileSize > 50) {
+      riskScore = 40;
+      result = 'حجم كبير (مشبوه)';
+    }
+
+    const newScan = await Scan.create({
+      user: req.user._id, type: 'file', target: fileName, result: result, riskScore: riskScore
+    });
+
+    res.status(200).json({ status: 'success', data: newScan });
+  } catch (error) {
+    res.status(500).json({ message: 'حدث خطأ أثناء الفحص' });
+  }
+};
+
+// 4. جلب سجل الفحوصات الخاص بالمستخدم
 exports.getHistory = async (req, res) => {
   try {
     const scans = await Scan.find({ user: req.user._id }).sort('-createdAt');
