@@ -31,6 +31,8 @@ app.use('/api/scans', scanRoutes);  // مسارات
  
 const intelRoutes = require('./routes/intelRoutes');
 app.use('/api/intel', intelRoutes);
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
 أدوات الفحص
 
 // رسالة ترحيبية للتأكد من عمل السيرفر
