@@ -32,6 +32,8 @@ app.use('/api/scans', scanRoutes);  // مسارات
 const intelRoutes = require('./routes/intelRoutes');
 app.use('/api/intel', intelRoutes);
 const adminRoutes = require('./routes/adminRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+app.use('/api/tickets', ticketRoutes);
 app.use('/api/admin', adminRoutes);
 أدوات الفحص
 
