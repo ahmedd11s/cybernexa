@@ -9,6 +9,7 @@ router.use(protect);
 
 router.post('/url', scanController.scanUrl);
 router.post('/password', scanController.scanPassword);
+router.post('/file', scanController.scanFile);
 router.get('/history', scanController.getHistory);
 
 module.exports = router;
