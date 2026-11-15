@@ -4,68 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBERNEXA | مركز العمليات</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .dashboard-body { background-color: #070b16; color: #fff; font-family: 'Cairo', sans-serif; margin: 0; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid #334155; }
+        .dashboard-body { background-color: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0;
+            background-image: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.12) 0%, transparent 55%); background-attachment: fixed; }
+        /* style.css يخلي .navbar ثابت (fixed)، هنا نخليه sticky عشان ما يغطيش المحتوى */
+        .navbar { position: sticky; top: 0; width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; padding: 16px 40px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid #334155; }
         .logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; }
-        .logo span { color: #00ffaa; }
+        .logo span { color: var(--accent); }
         .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .card h3 { color: #00ffaa; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .card { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: border-color .3s, transform .3s; }
+        .card:hover { border-color: rgba(var(--accent-rgb), 0.5); transform: translateY(-3px); }
+        .card h3 { color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .input-field { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #fff; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; }
-        .btn-action { width: 100%; padding: 12px; background: #00ffaa; color: #070b16; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-family: inherit; text-align: center; display: block; text-decoration: none; box-sizing: border-box;}
-        .btn-action:hover { background: #00cc88; }
-        .btn-logout { background: #ff4444; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+        .input-field:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.25); }
+        .btn-action { width: 100%; padding: 12px; background: var(--accent); color: var(--bg); border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-family: inherit; text-align: center; display: block; text-decoration: none; box-sizing: border-box; }
+        .btn-action:hover { background: var(--accent-dark); }
+        .btn-action:disabled { opacity: .6; cursor: not-allowed; }
+        .btn-logout { background: rgba(255, 107, 107, 0.15); color: #ff8a8a; border: 1px solid #ff6b6b; padding: 9px 20px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: .3s; }
+        .btn-logout:hover { background: #ff6b6b; color: #fff; }
         .result-box { margin-top: 15px; padding: 10px; border-radius: 8px; display: none; font-weight: bold; text-align: center; }
-        .result-safe { background: rgba(0, 255, 170, 0.1); color: #00ffaa; border: 1px solid #00ffaa; }
-        .result-danger { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; }
+        .result-safe { background: rgba(var(--accent-rgb), 0.12); color: var(--accent); border: 1px solid var(--accent); }
+        .result-danger { background: rgba(255, 107, 107, 0.1); color: #ff8a8a; border: 1px solid #ff6b6b; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .history-table th, .history-table td { padding: 12px; text-align: right; border-bottom: 1px solid #334155; font-size: 14px; }
         .history-table th { color: #94a3b8; }
+        .card-admin { border-color: #f5c26b; }
+        .card-admin h3 { color: #f5c26b; }
+        .card-admin .btn-action { background: #f5c26b; color: #1a1304; }
+        .table-wrap { overflow-x: auto; }
+        @media (max-width: 600px) { .navbar { padding: 14px 16px; } .container { padding: 12px; margin-top: 20px; } }
     </style>
 </head>
 <body class="dashboard-body">
-    
+
     <nav class="navbar">
         <a href="index.html" class="logo">CYBER<span>NEXA</span></a>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span style="color:#cbd5e1;">مرحباً، <strong id="userName" style="color:#00ffaa;">جاري التحميل...</strong></span>
+            <span style="color:#cbd5e1;">مرحباً، <strong id="userName" style="color:var(--accent);">جاري التحميل...</strong></span>
             <button id="logoutBtn" class="btn-logout">خروج</button>
         </div>
     </nav>
 
     <div class="container">
         <h2 style="margin-bottom: 30px;">مركز العمليات الأمنية 🛡️</h2>
-        
+
         <div class="grid">
             <!-- 1. أداة فحص الروابط -->
             <div class="card">
                 <h3>🔍 فحص الروابط (URL Scanner)</h3>
                 <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">أدخل أي رابط للتأكد من خلوه من التهديدات.</p>
-                <input type="text" id="urlInput" class="input-field" placeholder="https://example.com">
+                <input type="text" id="urlInput" class="input-field" placeholder="https://example.com" aria-label="الرابط المراد فحصه">
                 <button onclick="scanUrl()" class="btn-action">بدء الفحص</button>
-                <div id="urlResult" class="result-box"></div>
+                <div id="urlResult" class="result-box" role="status" aria-live="polite"></div>
             </div>
 
             <!-- 2. أداة فحص كلمة المرور -->
             <div class="card">
                 <h3>🔐 مقياس قوة كلمة المرور</h3>
                 <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">تأكد من أن كلمة مرورك غير قابلة للاختراق.</p>
-                <input type="password" id="passInput" class="input-field" placeholder="أدخل كلمة المرور هنا">
+                <input type="password" id="passInput" class="input-field" placeholder="أدخل كلمة المرور هنا" aria-label="كلمة المرور المراد تحليلها" autocomplete="off">
                 <button onclick="scanPassword()" class="btn-action">تحليل القوة</button>
-                <div id="passResult" class="result-box"></div>
+                <div id="passResult" class="result-box" role="status" aria-live="polite"></div>
             </div>
 
-            <!-- 3. فاحص الملفات (جديد) -->
+            <!-- 3. فاحص الملفات -->
             <div class="card">
                 <h3>📁 فاحص الملفات (File Scanner)</h3>
                 <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">فحص الملفات بحثاً عن فيروسات أو أكواد خبيثة.</p>
-                <input type="text" id="fileInput" class="input-field" placeholder="اسم الملف (مثال: virus.exe)">
+                <input type="text" id="fileInput" class="input-field" placeholder="اسم الملف (مثال: virus.exe)" aria-label="اسم الملف">
                 <button onclick="scanFile()" class="btn-action">بدء الفحص</button>
-                <div id="fileResult" class="result-box"></div>
+                <div id="fileResult" class="result-box" role="status" aria-live="polite"></div>
             </div>
 
             <!-- 4. قسم استخبارات التهديدات -->
@@ -82,7 +95,7 @@
                 <a href="soc.html" class="btn-action">دخول المركز</a>
             </div>
 
-            <!-- 6. الدعم الفني (جديد) -->
+            <!-- 6. الدعم الفني -->
             <div class="card" style="text-align:center; display: flex; flex-direction: column; justify-content: center;">
                 <h3 style="justify-content: center;">🎫 الدعم الفني</h3>
                 <p style="color:#94a3b8; margin-bottom:20px; font-size:14px;">هل تواجه مشكلة؟ افتح تذكرة وسنقوم بالرد عليك.</p>
@@ -90,29 +103,31 @@
             </div>
 
             <!-- 7. لوحة تحكم المدير (تظهر للمدير فقط) -->
-            <div class="card" id="adminCard" style="display: none; text-align:center; flex-direction: column; justify-content: center; border-color: #ffaa00;">
-                <h3 style="justify-content: center; color: #ffaa00;">👑 لوحة تحكم المدير</h3>
+            <div class="card card-admin" id="adminCard" style="display: none; text-align:center; flex-direction: column; justify-content: center;">
+                <h3 style="justify-content: center;">👑 لوحة تحكم المدير</h3>
                 <p style="color:#94a3b8; margin-bottom:20px; font-size:14px;">إدارة المستخدمين والإحصائيات العامة للمنصة.</p>
-                <a href="admin.html" class="btn-action" style="background:#ffaa00; color:#000;">دخول اللوحة</a>
+                <a href="admin.html" class="btn-action">دخول اللوحة</a>
             </div>
         </div>
 
         <!-- سجل الفحوصات -->
         <div class="card" style="margin-top: 30px;">
             <h3>📊 سجل الفحوصات السابقة</h3>
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>النوع</th>
-                        <th>الهدف</th>
-                        <th>النتيجة</th>
-                        <th>التاريخ</th>
-                    </tr>
-                </thead>
-                <tbody id="historyBody">
-                    <tr><td colspan="4" style="text-align:center;">جاري تحميل السجل...</td></tr>
-                </tbody>
-            </table>
+            <div class="table-wrap">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>النوع</th>
+                            <th>الهدف</th>
+                            <th>النتيجة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr><td colspan="4" style="text-align:center;">جاري تحميل السجل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

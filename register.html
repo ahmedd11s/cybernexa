@@ -4,39 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBERNEXA | إنشاء حساب</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-body">
     <div class="auth-container">
         <div class="auth-box">
+            <a href="index.html" class="back-home">← الرئيسية</a>
             <h2>انضم إلى <span>CYBERNEXA</span></h2>
             <p>أنشئ حسابك لحماية عالمك الرقمي</p>
-            
-            <div id="error-message" class="alert error" style="display: none;"></div>
-            <div id="success-message" class="alert success" style="display: none;"></div>
+
+            <div id="error-message" class="alert error" style="display: none;" role="alert" aria-live="polite"></div>
+            <div id="success-message" class="alert success" style="display: none;" role="status" aria-live="polite"></div>
 
             <form id="registerForm">
                 <div class="input-group">
-                    <label>الاسم بالكامل</label>
-                    <input type="text" id="name" required placeholder="أدخل اسمك">
+                    <label for="name">الاسم بالكامل</label>
+                    <input type="text" id="name" name="name" required autocomplete="name" placeholder="أدخل اسمك">
                 </div>
                 <div class="input-group">
-                    <label>البريد الإلكتروني (أو رقم الهاتف)</label>
-                    <input type="text" id="email" placeholder="example@mail.com أو 010...">
+                    <label for="email">البريد الإلكتروني (أو رقم الهاتف)</label>
+                    <input type="text" id="email" name="email" required autocomplete="username" placeholder="example@mail.com أو 010...">
                 </div>
                 <div class="input-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="password" required placeholder="8 أحرف على الأقل">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="8 أحرف على الأقل">
                 </div>
-                
+
                 <button type="submit" class="btn-primary">إنشاء الحساب</button>
             </form>
 
             <div class="divider">أو</div>
-            
+
             <button type="button" class="btn-google" onclick="alert('سيتم تفعيل جوجل بعد ربط مفاتيح الـ API')">
-                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google">
+                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="" width="24" height="24">
                 التسجيل باستخدام Google
             </button>
 
