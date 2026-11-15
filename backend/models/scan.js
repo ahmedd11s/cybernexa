@@ -5,12 +5,8 @@ const scanSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  },
-  type: {
-    type: String,
-    enum: ['url', 'password'],
-    required: true
-  },
+  // غير السطر ده:
+type: { type: String, enum: ['url', 'password', 'file'], required: true },
   target: {
     type: String,
     required: true
