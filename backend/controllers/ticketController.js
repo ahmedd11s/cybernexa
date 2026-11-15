@@ -1,45 +1,17 @@
-const Ticket = require('../models/Ticket');
+const express = require('express');
+const ticketController = require('../controllers/ticketController');
+const { protect, restrictTo } = require('../middleware/authMiddleware');
 
-// إنشاء تذكرة جديدة
-exports.createTicket = async (req, res) => {
-  try {
-    const { subject, message } = req.body;
-    if (!subject || !message) return res.status(400).json({ message: 'الرجاء إدخال الموضوع والرسالة' });
+const router = express.Router();
 
-    const ticket = await Ticket.create({ user: req.user._id, subject, message });
-    res.status(201).json({ status: 'success', data: ticket });
-  } catch (error) {
-    res.status(500).json({ message: 'حدث خطأ أثناء إنشاء التذكرة' });
-  }
-};
+router.use(protect); // كل المسارات دي محتاجة تسجيل دخول
 
-// جلب تذاكر المستخدم الحالي
-exports.getMyTickets = async (req, res) => {
-  try {
-    const tickets = await Ticket.find({ user: req.user._id }).sort('-createdAt');
-    res.status(200).json({ status: 'success', data: tickets });
-  } catch (error) {
-    res.status(500).json({ message: 'حدث خطأ' });
-  }
-};
+// للمستخدم العادي
+router.post('/', ticketController.createTicket);
+router.get('/my-tickets', ticketController.getMyTickets);
 
-// (للمدير) جلب كل التذاكر
-exports.getAllTickets = async (req, res) => {
-  try {
-    const tickets = await Ticket.find().populate('user', 'name email').sort('-createdAt');
-    res.status(200).json({ status: 'success', data: tickets });
-  } catch (error) {
-    res.status(500).json({ message: 'حدث خطأ' });
-  }
-};
+// للمدير فقط (كانت محمية بـ protect بس، فأي مستخدم كان يقدر يشوف كل التذاكر ويرد عليها)
+router.get('/all', restrictTo('admin'), ticketController.getAllTickets);
+router.put('/:id/reply', restrictTo('admin'), ticketController.replyTicket);
 
-// (للمدير) الرد على تذكرة وإغلاقها
-exports.replyTicket = async (req, res) => {
-  try {
-    const { adminReply } = req.body;
-    const ticket = await Ticket.findByIdAndUpdate(req.params.id, { adminReply, status: 'closed' }, { new: true });
-    res.status(200).json({ status: 'success', data: ticket });
-  } catch (error) {
-    res.status(500).json({ message: 'حدث خطأ' });
-  }
-};
+module.exports = router;
