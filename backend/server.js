@@ -12,11 +12,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
 
-// المسارات الأساسية (اللي اتأكدنا إن ملفاتها موجودة)
+// خليك شغال بالـ Auth بس دلوقتي
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/scans', require('./routes/scanRoutes'));
 
-// مسار ترحيبي للتأكد من عمل السيرفر
 app.get('/', (req, res) => res.json({ message: 'CYBERNEXA API is running 🚀' }));
 
 const PORT = process.env.PORT || 5000;
