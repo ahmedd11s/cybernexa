@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:5000/api';
+// رابط السيرفر الجديد بتاعك على Suga
+const API_URL = 'https://s7e7sfnablec-production-12fbya08.us-central1.suga.run/api';
 
 // 1. جلب بيانات المستخدم
 async function getUserProfile() {
@@ -111,7 +112,7 @@ async function scanFile() {
         const response = await fetch(`${API_URL}/scans/file`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileName, fileSize: 10 }),
+            body: JSON.stringify({ fileName, fileSize: 10 }), 
             credentials: 'include'
         });
         const data = await response.json();
@@ -130,32 +131,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
     window.location.href = 'login.html';
 });
 
-// تشغيل الدوال
+// تشغيل الدوال أول ما الصفحة تفتح
 getUserProfile();
 loadHistory();
-// دالة فحص الملفات
-async function scanFile() {
-    const fileName = document.getElementById('fileInput').value;
-    const resultBox = document.getElementById('fileResult');
-    if (!fileName) return alert('الرجاء إدخال اسم الملف');
-
-    resultBox.style.display = 'block';
-    resultBox.className = 'result-box';
-    resultBox.textContent = 'جاري فحص الملف...';
-
-    try {
-        const response = await fetch(`${API_URL}/scans/file`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileName, fileSize: 10 }), // بنبعت حجم وهمي
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        resultBox.className = `result-box ${data.data.riskScore > 50 ? 'result-danger' : 'result-safe'}`;
-        resultBox.textContent = data.data.result;
-        if (typeof loadHistory === 'function') loadHistory();
-    } catch (error) {
-        resultBox.textContent = 'حدث خطأ';
-    }
-}
