@@ -3,32 +3,27 @@ const User = require('../models/User');
 
 const protect = async (req, res, next) => {
   try {
-    let token;
-    
-    // بنجيب التوكن من الكوكيز
-    if (req.cookies.jwt) {
-      token = req.cookies.jwt;
-    }
+    const token = req.cookies.jwt;
+    if (!token) return res.status(401).json({ message: 'غير مصرح لك بالدخول' });
 
-    if (!token) {
-      return res.status(401).json({ status: 'error', message: 'غير مصرح لك بالدخول، يرجى تسجيل الدخول' });
-    }
-
-    // فك تشفير التوكن
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // جلب المستخدم من الداتابيز
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return res.status(401).json({ status: 'error', message: 'المستخدم غير موجود' });
-    }
+    // select('-password'): ما نحمّلش هاش كلمة المرور مع المستخدم (وإلا ممكن يتبعت للواجهة في /auth/me)
+    const currentUser = await User.findById(decoded.id).select('-password');
+    if (!currentUser) return res.status(401).json({ message: 'المستخدم غير موجود' });
 
-    // نخلي بيانات المستخدم متاحة في req
     req.user = currentUser;
     next();
   } catch (error) {
-    res.status(401).json({ status: 'error', message: 'التوكن غير صالح أو انتهت صلاحيته' });
+    res.status(401).json({ message: 'التوكن غير صالح أو انتهت صلاحيته' });
   }
 };
 
-module.exports = { protect };
+// حماية بالدور: استخدمها بعد protect، مثال: router.get('/all', restrictTo('admin'), handler)
+const restrictTo = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res.status(403).json({ status: 'error', message: 'غير مصرح لك بتنفيذ هذا الإجراء' });
+  }
+  next();
+};
+
+module.exports = { protect, restrictTo };
