@@ -27,7 +27,11 @@ const authRoutes = require('./routes/authRoutes');
 const scanRoutes = require('./routes/scanRoutes');
 
 app.use('/api/auth', authRoutes);   // مسارات الحسابات
-app.use('/api/scans', scanRoutes);  // مسارات أدوات الفحص
+app.use('/api/scans', scanRoutes);  // مسارات
+ 
+const intelRoutes = require('./routes/intelRoutes');
+app.use('/api/intel', intelRoutes);
+أدوات الفحص
 
 // رسالة ترحيبية للتأكد من عمل السيرفر
 app.get('/', (req, res) => {
