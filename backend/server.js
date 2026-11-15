@@ -12,12 +12,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
 
+// المسارات الأساسية (اللي اتأكدنا إن ملفاتها موجودة)
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/scans', require('./routes/scanRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/tickets', require('./routes/ticketRoutes'));
-app.use('/api/intel', require('./routes/intelRoutes'));
 
+// مسار ترحيبي للتأكد من عمل السيرفر
 app.get('/', (req, res) => res.json({ message: 'CYBERNEXA API is running 🚀' }));
 
 const PORT = process.env.PORT || 5000;
