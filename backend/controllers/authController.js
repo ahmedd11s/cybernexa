@@ -1,17 +1,24 @@
 const authService = require('../services/authService');
 const { registerSchema, loginSchema } = require('../validators/authValidator');
 const AuditLog = require('../models/AuditLog');
-const User = require('../models/User');
-const crypto = require('crypto');
+
+// الموقع على دومين والسيرفر على دومين تاني (Suga) = طلبات cross-site.
+// 'strict' كان بيخلي المتصفح يتجاهل الكوكي. في الإنتاج لازم SameSite=None مع Secure.
+// ملحوظة: لازم تحط NODE_ENV=production في متغيرات البيئة على Suga.
+const isProd = process.env.NODE_ENV === 'production';
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: isProd ? 'none' : 'lax',
+  path: '/'
+};
 
 const sendTokenCookie = (res, token) => {
-  res.cookie('jwt', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  });
+  res.cookie('jwt', token, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 };
+
+// تسجيل الأحداث ما يكسرش الطلب لو فشل
+const audit = (data) => AuditLog.create(data).catch(() => {});
 
 exports.register = async (req, res) => {
   try {
@@ -22,27 +29,27 @@ exports.register = async (req, res) => {
     sendTokenCookie(res, token);
     res.status(201).json({ status: 'success', message: 'تم إنشاء الحساب بنجاح', data: { user } });
   } catch (err) {
-    res.status(400).json({ status: 'error', message: err.message });
+    const message = err && err.code === 11000 ? 'هذا الحساب مسجل بالفعل' : err.message;
+    res.status(400).json({ status: 'error', message });
   }
 };
 
 exports.login = async (req, res) => {
+  const identifier = String(req.body.email || req.body.phone || '').slice(0, 100);
   try {
     const { error } = loginSchema.validate(req.body);
     if (error) return res.status(400).json({ status: 'error', message: error.details[0].message });
 
-    const identifier = req.body.email || req.body.phone;
-    const { user, token } = await authService.loginUser(identifier, req.body.password);
-    
-    // تسجيل حدث الدخول الناجح
-    await AuditLog.create({ user: user._id, action: 'login_success', ipAddress: req.ip, userAgent: req.get('User-Agent') });
+    const { user, token } = await authService.loginUser(req.body.email || req.body.phone, req.body.password);
+
+    await audit({ user: user._id, action: 'login_success', ipAddress: req.ip, userAgent: req.get('User-Agent') });
 
     sendTokenCookie(res, token);
     res.status(200).json({ status: 'success', message: 'تم تسجيل الدخول', data: { user } });
   } catch (err) {
-    // تسجيل محاولة الدخول الفاشلة (لمراقبة الاختراقات)
-    await AuditLog.create({ action: 'login_failed', ipAddress: req.ip, userAgent: req.get('User-Agent'), details: req.body.email || req.body.phone });
-    res.status(401).json({ status: 'error', message: err.message });
+    await audit({ action: 'login_failed', ipAddress: req.ip, userAgent: req.get('User-Agent'), details: identifier });
+    // رسالة واحدة لكل الحالات: ما نقولش هل الحساب موجود ولا كلمة المرور غلط
+    res.status(401).json({ status: 'error', message: 'بيانات الدخول غير صحيحة' });
   }
 };
 
@@ -51,33 +58,7 @@ exports.getMe = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', { expires: new Date(Date.now() + 10 * 1000), httpOnly: true });
+  // لازم نفس خصائص الكوكي (secure/sameSite) وإلا المتصفح ممكن يتجاهل المسح
+  res.clearCookie('jwt', cookieOptions);
   res.status(200).json({ status: 'success', message: 'تم تسجيل الخروج' });
-};
-
-// إنشاء كود OTP (لتفعيل الحساب)
-exports.sendOTP = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otpCode = otp;
-    user.otpExpires = Date.now() + 10 * 60 * 1000;
-    await user.save();
-    // هنا بنرجع الكود في الرد عشان تجربه (في الإنتاج بيتبعت إيميل)
-    res.status(200).json({ status: 'success', message: 'تم إنشاء الكود', otp }); 
-  } catch (e) { res.status(500).json({ message: 'حدث خطأ' }); }
-};
-
-// التحقق من كود OTP
-exports.verifyOTP = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    if (user.otpCode !== req.body.otp || user.otpExpires < Date.now()) {
-      return res.status(400).json({ message: 'الكود غير صحيح أو انتهت صلاحيته' });
-    }
-    user.isVerified = true;
-    user.otpCode = undefined;
-    await user.save();
-    res.status(200).json({ status: 'success', message: 'تم تفعيل الحساب بنجاح' });
-  } catch (e) { res.status(500).json({ message: 'حدث خطأ' }); }
 };
