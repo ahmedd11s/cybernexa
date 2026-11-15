@@ -12,28 +12,23 @@ connectDB();
 
 const app = express();
 
-// 1. حماية HTTP Headers
+// حماية HTTP Headers ومنع NoSQL Injection
 app.use(helmet());
-
-// 2. منع NoSQL Injection
 app.use(mongoSanitize());
-
-app.use(express.json({ limit: '10kb' })); // تحديد حجم البيانات لمنع DDoS
+app.use(express.json({ limit: '10kb' }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
 
-// 3. Rate Limiting (منع Brute Force)
+// منع هجمات Brute Force (5 محاولات كل 15 دقيقة)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 دقيقة
-  max: 5, // 5 محاولات فقط لكل IP
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: { status: 'error', message: 'لقد تجاوزت الحد المسموح من المحاولات، يرجى المحاولة بعد 15 دقيقة' }
 });
-
-// تطبيق الحماية على مسارات الدخول والتسجيل فقط
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
-// باقي المسارات
+// المسارات
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/scans', require('./routes/scanRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
